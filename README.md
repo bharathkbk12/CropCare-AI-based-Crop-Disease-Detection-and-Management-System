@@ -1,1 +1,0 @@
-# CropCare-AI-based-Crop-Disease-Detection-and-Management-System
