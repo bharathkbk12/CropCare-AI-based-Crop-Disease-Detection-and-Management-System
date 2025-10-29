@@ -1,0 +1,225 @@
+{% extends 'layout.html' %} 
+{% block body %}
+
+<style>
+    html body {
+        font-family: 'Arial', sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Background Video */
+    .background-video-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: -1;
+    }
+
+    .background-video-container video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.3; /* Slight transparency to make content more visible */
+    }
+
+    h2 {
+        text-align: center;
+        margin: 0;
+        color: #2c3e50;
+        font-size: 32px;
+        font-weight: bold;
+        text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-container {
+        width: 380px;
+        margin: 50px auto;
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .form-container:hover {
+        transform: scale(1.05);
+    }
+
+    .form-signin h2 {
+        color: #3498db;
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+
+    .form-control-file {
+        margin-bottom: 20px;
+    }
+
+    .btn-block {
+        font-size: 18px;
+        font-weight: bold;
+        background-color: #3498db;
+        border-color: #3498db;
+        border-radius: 8px;
+        padding: 12px 0;
+        color: white;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .btn-block:hover {
+        background-color: #2980b9;
+        cursor: pointer;
+        transform: scale(1.05);
+    }
+
+    #camera {
+        border-radius: 10px;
+        border: 2px solid #3498db;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .rounded {
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    #output-image {
+        display: block;
+        width: 100%;
+        max-width: 320px;
+        margin: 20px auto;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    #output-image:hover {
+        transform: scale(1.05);
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-signin label {
+        font-size: 18px;
+        font-weight: 600;
+        color: #34495e;
+        margin-bottom: 10px;
+    }
+
+    .form-heading {
+        color: #3498db;
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 25px;
+        text-align: center;
+    }
+
+    .camera-button {
+        background-color: #16a085;
+        color: white;
+        border-radius: 8px;
+        padding: 10px;
+        border: none;
+        font-weight: bold;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+        width: 100%;
+    }
+
+    .camera-button:hover {
+        background-color: #1abc9c;
+        transform: scale(1.05);
+        cursor: pointer;
+    }
+</style>
+
+<!-- Background Video Section -->
+<div class="background-video-container">
+    <video autoplay loop muted>
+        <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+</div>
+
+<br /><br />
+<h2>
+  <b>Find out which disease has been caught by your plant</b>
+</h2>
+<br /><br>
+
+<div class="form-container">
+  {% if error_message %}
+  <div class="alert alert-warning" role="alert" style="margin-bottom: 1rem;">
+    {{ error_message }}
+  </div>
+  {% endif %}
+  <form class="form-signin" method="post" enctype="multipart/form-data">
+    <div class="form-heading">
+      <b>Please Upload The Image or Capture via Camera</b>
+    </div>
+    
+    <!-- File Upload Input -->
+    <input type="file" name="file" class="form-control-file" id="inputfile" 
+      onchange="preview_image(event)" accept="image/*" style="font-weight: bold;">
+    <br>
+
+    <!-- Camera Capture Option -->
+    <h2 class="h4 mb-3 font-weight-normal text-center"><b>Or Capture an Image</b></h2>
+    <video id="camera" width="100%" height="auto" autoplay></video>
+    <button type="button" onclick="captureImage()" class="camera-button">Capture Image</button>
+    <canvas id="canvas" style="display: none;"></canvas>
+    
+    <br><br>
+    <img id="output-image" class="rounded mx-auto d-block" />
+    <input type="hidden" name="camera_image" id="camera-image-data">
+    
+    <button class="btn btn-lg btn-primary btn-block" type="submit" style="font-weight: bold;">Predict</button>
+  </form>
+</div>
+
+<script type="text/javascript">
+  // Function to preview uploaded image
+  function preview_image(event) {
+    var reader = new FileReader();
+    reader.onload = function () {
+      var output = document.getElementById('output-image');
+      output.src = reader.result;
+    }
+    reader.readAsDataURL(event.target.files[0]);
+  }
+
+  // Access user camera and stream video
+  let video = document.getElementById('camera');
+  let canvas = document.getElementById('canvas');
+  let cameraImageInput = document.getElementById('camera-image-data');
+
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(stream => {
+      video.srcObject = stream;
+    })
+    .catch(err => {
+      console.log("Camera access denied: ", err);
+    });
+
+  // Function to capture image from video
+  function captureImage() {
+    let context = canvas.getContext('2d');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    
+    let imageData = canvas.toDataURL('image/png');
+    document.getElementById('output-image').src = imageData;
+    cameraImageInput.value = imageData; // Store image in hidden input for form submission
+  }
+</script>
+
+{% endblock %}
+
+

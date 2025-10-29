@@ -1,0 +1,159 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+<div class="container py-5 mx-auto" style="margin: 2rem;">
+  
+  <!-- Step 1: Disease Detection Results -->
+  <div class="row mb-5">
+    <div class="col-sm py-2 py-md-3">
+      <div class="card card-body text-center" style="background-color: #f8f9fa; border-left: 5px solid #28a745;">
+        <h3 style="color: #28a745; font-size: 24px;"><b>🌿 Step 1: Disease Detection Results</b></h3>
+        <hr>
+        <p style="color: rgb(189, 108, 108); font-size: 22px;">
+          <strong>Model's Prediction:</strong> {{ model_prediction }}
+        </p>
+        <p style="color: rgb(108, 148, 189); font-size: 22px;">
+          <strong>Google's Prediction:</strong> {{ google_prediction }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Weather Information -->
+  <div class="row mb-5">
+    <div class="col-sm">
+      <div class="card card-body text-center" style="background-color: #e3f2fd;">
+        <h3>🌤️ Weather Details for {{ city }}</h3>
+        <p><strong>Temperature:</strong> {{ temperature }} °C</p>
+        <p><strong>Humidity:</strong> {{ humidity }}%</p>
+        <p><strong>Condition:</strong> {{ condition }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2: Fertilizer Recommendation -->
+  <div class="row">
+    <div class="col-sm">
+      <div class="card card-body" style="background-color: #fff3cd; border-left: 5px solid #ffc107;">
+        <h3 style="color: #856404; font-size: 24px;"><b>🌱 Step 2: Get Fertilizer Recommendation</b></h3>
+        <hr>
+        <p style="color: #856404; font-size: 18px; margin-bottom: 20px;">
+          Now that we've identified the disease, let's get personalized fertilizer recommendations based on your location and soil conditions.
+        </p>
+        
+        <form method="post" action="/fertilizer-predict" class="needs-validation" novalidate>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="crop" class="form-label"><strong>Detected Crop Type:</strong></label>
+              <input type="text" class="form-control" id="crop" name="crop" value="{{ detected_crop }}" readonly style="background-color: #f8f9fa;">
+              <small class="form-text text-muted">Based on disease detection</small>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="city" class="form-label"><strong>Location:</strong></label>
+              <input type="text" class="form-control" id="city" name="city" value="{{ city }}" required>
+              <small class="form-text text-muted">Enter your city for location-specific recommendations</small>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label for="nitrogen" class="form-label"><strong>Nitrogen (N):</strong></label>
+              <input type="number" class="form-control" id="nitrogen" name="nitrogen" value="50" min="0" max="200" required>
+              <small class="form-text text-muted">Current N level in soil</small>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="phosphorous" class="form-label"><strong>Phosphorous (P):</strong></label>
+              <input type="number" class="form-control" id="phosphorous" name="phosphorous" value="30" min="0" max="200" required>
+              <small class="form-text text-muted">Current P level in soil</small>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="pottasium" class="form-label"><strong>Potassium (K):</strong></label>
+              <input type="number" class="form-control" id="pottasium" name="pottasium" value="40" min="0" max="200" required>
+              <small class="form-text text-muted">Current K level in soil</small>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="ph" class="form-label"><strong>Soil pH:</strong></label>
+              <input type="number" class="form-control" id="ph" name="ph" value="6.5" step="0.1" min="3.0" max="10.0" required>
+              <small class="form-text text-muted">Soil acidity/alkalinity (3.0-10.0)</small>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="rainfall" class="form-label"><strong>Rainfall (mm):</strong></label>
+              <input type="number" class="form-control" id="rainfall" name="rainfall" value="100" min="0" max="1000" required>
+              <small class="form-text text-muted">Annual rainfall in your area</small>
+            </div>
+          </div>
+          
+          <div class="text-center mt-4">
+            <button type="submit" class="btn btn-warning btn-lg" style="font-weight: bold; padding: 12px 30px;">
+              🌱 Get Fertilizer Recommendation
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="row mt-4">
+    <div class="col-sm text-center">
+      <a href="/disease-predict" class="btn btn-outline-primary btn-lg mr-3">
+        🔄 Detect Another Disease
+      </a>
+      <a href="/" class="btn btn-outline-secondary btn-lg">
+        🏠 Back to Home
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+.form-control:focus {
+  border-color: #ffc107;
+  box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+}
+
+.btn-warning {
+  background-color: #ffc107;
+  border-color: #ffc107;
+  color: #212529;
+}
+
+.btn-warning:hover {
+  background-color: #e0a800;
+  border-color: #d39e00;
+  color: #212529;
+}
+
+.card {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: none;
+}
+
+.form-label {
+  font-weight: 600;
+  color: #495057;
+}
+</style>
+
+<script>
+// Form validation
+(function() {
+  'use strict';
+  window.addEventListener('load', function() {
+    var forms = document.getElementsByClassName('needs-validation');
+    var validation = Array.prototype.filter.call(forms, function(form) {
+      form.addEventListener('submit', function(event) {
+        if (form.checkValidity() === false) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  }, false);
+})();
+</script>
+{% endblock %}

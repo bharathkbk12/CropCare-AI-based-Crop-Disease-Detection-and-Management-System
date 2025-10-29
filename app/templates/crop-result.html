@@ -1,0 +1,36 @@
+{% extends 'layout.html' %}
+{% block body %}
+
+<style>
+  .mt-0 {
+    margin-top: 50px !important;
+  }
+</style>
+
+<div class="container py-2 mx-auto my-50 h-10" style="margin: 12rem;">
+  <div class="row">
+    <div class="col-sm py-2 py-md-3">
+      <div class="card card-body" style="justify-content: center;">
+        <h1 class="text-center"><b>You should grow <i>{{ prediction }}</i> in your farm</b></h1>
+        {% if source %}
+        <p class="text-center mt-2"><span class="badge badge-info">Source: {{ 'ML Model' if source == 'ml' else 'Heuristic Fallback' }}</span></p>
+        {% endif %}
+        <!-- Weather Information -->
+        <div class="weather-info mt-4">
+          <h3 class="text-center">Weather Details{% if city %} for {{ city }}{% endif %}</h3>
+          <p class="text-center"><strong>Temperature:</strong> {{ temperature }} °C</p>
+          <p class="text-center"><strong>Humidity:</strong> {{ humidity }}%</p>
+          <p class="text-center"><strong>Condition:</strong> {{ condition }}</p>
+        </div>
+        <!-- Input Summary -->
+        <div class="mt-4">
+          <h5 class="text-center">Inputs Summary</h5>
+          <p class="text-center mb-0"><strong>N:</strong> {{ N }} | <strong>P:</strong> {{ P }} | <strong>K:</strong> {{ K }}</p>
+          <p class="text-center mb-0"><strong>pH:</strong> {{ ph }} | <strong>Rainfall (mm):</strong> {{ rainfall }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

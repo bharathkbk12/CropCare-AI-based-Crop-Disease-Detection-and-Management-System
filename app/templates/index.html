@@ -1,0 +1,193 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+<!-- Banner Section -->
+<section class="banner_w3lspvt" id="home" style="position: relative; overflow: hidden;">
+    <div class="csslider infinity" id="slider1">
+        <div class="banner-top">
+            <div class="overlay" style="background-color: rgba(0, 0, 0, 0.5);">
+                <div class="container">
+                    <div class="w3layouts-banner-info text-center">
+                        <h3 class="text-white">CropCare</h3>
+                        <h4 class="text-warning mx-auto my-4"><b>Make informed decisions about your farming strategy.</b></h4>
+                        <h4 class="text-warning mx-auto my-4"><strong>Key Questions We Answer</strong></h4>
+                        <p class="text-light mx-auto mt-2">
+                            1. What crops are best suited for my soil and environment? <br>
+                            2. What fertilizers should I use based on my soil composition? <br>
+                            3. Which diseases affect my crops? <br>
+                            4. How can I effectively treat the diseases affecting my crops?
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- //Banner Section -->
+
+<!-- Search Section -->
+<section class="search-section py-5" style="background-color: #f8f9fa;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-body p-4">
+                        <h3 class="text-center text-primary mb-4">🤖 AI Agricultural Assistant</h3>
+                        <p class="text-center text-muted mb-4">Ask me anything about crops, diseases, fertilizers, or farming!</p>
+                        
+                        <!-- Search Input -->
+                        <div class="input-group mb-3">
+                            <input type="text" id="ai-query" class="form-control form-control-lg" 
+                                   placeholder="e.g., What crops grow best in hot weather?" 
+                                   style="border-radius: 25px 0 0 25px;">
+                            <button class="btn btn-success btn-lg" onclick="searchAI()" 
+                                    style="border-radius: 0 25px 25px 0; padding: 12px 25px;">
+                                🔍 Search
+                            </button>
+                        </div>
+                        
+                        <!-- Example Queries -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <h6 class="text-muted">💡 Try asking:</h6>
+                                <ul class="list-unstyled small">
+                                    <li>• "What is apple scab disease?"</li>
+                                    <li>• "How to grow wheat?"</li>
+                                    <li>• "Best fertilizer for tomatoes"</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-muted">🌱 Popular topics:</h6>
+                                <ul class="list-unstyled small">
+                                    <li>• Crop diseases and treatment</li>
+                                    <li>• Soil nutrients and fertilizers</li>
+                                    <li>• Weather and crop growth</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <!-- Response Area -->
+                        <div id="ai-response" class="mt-4" style="display: none;">
+                            <div class="alert alert-info">
+                                <h6 class="mb-2">🤖 AI Response:</h6>
+                                <div id="ai-answer" style="white-space: pre-line;"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Loading Indicator -->
+                        <div id="ai-loading" class="text-center mt-3" style="display: none;">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="sr-only">Searching...</span>
+                            </div>
+                            <p class="mt-2 text-muted">Searching agricultural knowledge base...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+async function searchAI() {
+    let query = document.getElementById("ai-query").value.trim();
+    if (!query) {
+        alert("Please enter a search query.");
+        return;
+    }
+    
+    // Show loading indicator
+    document.getElementById("ai-loading").style.display = "block";
+    document.getElementById("ai-response").style.display = "none";
+    
+    try {
+        const response = await fetch("/ai_search", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query: query })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        
+        const data = await response.json();
+        
+        // Hide loading, show response
+        document.getElementById("ai-loading").style.display = "none";
+        document.getElementById("ai-answer").innerText = data.answer;
+        document.getElementById("ai-response").style.display = "block";
+        
+        // Scroll to response
+        document.getElementById("ai-response").scrollIntoView({ behavior: 'smooth' });
+        
+    } catch (error) {
+        console.error('Search error:', error);
+        document.getElementById("ai-loading").style.display = "none";
+        document.getElementById("ai-answer").innerText = "Sorry, I encountered an error. Please try again.";
+        document.getElementById("ai-response").style.display = "block";
+    }
+}
+
+// Allow Enter key to trigger search
+document.getElementById("ai-query").addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+        searchAI();
+    }
+});
+
+// Add click handlers for example queries
+document.addEventListener('DOMContentLoaded', function() {
+    // Add click handlers for example queries
+    const examples = [
+        "What is apple scab disease?",
+        "How to grow wheat?",
+        "Best fertilizer for tomatoes"
+    ];
+    
+    examples.forEach(example => {
+        // This would require more complex DOM manipulation to make examples clickable
+        // For now, users can copy and paste the examples
+    });
+});
+</script>
+<!-- //Search Section -->
+
+<!-- Services Section -->
+<section class="blog py-5" style="background-color: #ffffff;">
+    <div class="container py-md-5">
+        <h3 class="heading mb-sm-5 mb-4 text-center text-primary">Our Services</h3>
+        <div class="row blog-grids">
+            <div class="col-lg-4 col-md-6 blog-left mb-4">
+                <img src="{{ url_for('static', filename='images/s3.jpg') }}" class="img-fluid" alt="Crop Recommendation" />
+                <a href="{{ url_for('crop_recommend') }}">
+                    <div class="blog-info" style="background-color: #e8f5e9; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                        <h4 class="text-success">Crop Recommendation</h4>
+                        <p>Find the best crops suited for your soil and environmental conditions.</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-lg-4 col-md-6 blog-middle mb-4">
+                <img src="{{ url_for('static', filename='images/s2.jpg') }}" class="img-fluid" alt="Fertilizer Recommendation" />
+                <a href="{{ url_for('fertilizer_recommendation') }}">
+                    <div class="blog-info" style="background-color: #e8f5e9; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                        <h4 class="text-success">Fertilizer Recommendation</h4>
+                        <p>Get tailored fertilizer suggestions based on soil composition and crop needs.</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-lg-4 col-md-6 blog-right">
+                <img src="{{ url_for('static', filename='images/s4.jpg') }}" class="img-fluid" alt="Crop Disease Prediction" />
+                <a href="{{ url_for('disease_prediction') }}">
+                    <div class="blog-info" style="background-color: #e8f5e9; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                        <h4 class="text-success">Crop Disease Prediction</h4>
+                        <p>Identify crop diseases early and get recommendations for effective treatments.</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- //Services Section -->
+
+{% endblock %}

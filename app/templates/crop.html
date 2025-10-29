@@ -1,0 +1,219 @@
+{% extends 'layout.html' %} 
+{% block body %}
+
+<style>
+    html body {
+      background-color: #e0f7fa;
+      font-family: 'Arial', sans-serif;
+    }
+
+    h2 {
+      text-align: center;
+      margin: 0px;
+      color: #2c3e50;
+      font-size: 32px;
+      font-weight: bold;
+      text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-container {
+      width: 380px;
+      height: auto;
+      margin: 30px auto;
+      background: linear-gradient(135deg, #fff, #f0f9f9);
+      border-radius: 25px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      transition: all 0.3s ease;
+    }
+
+    .form-container:hover {
+      transform: scale(1.05);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-control {
+      font-weight: bold;
+      border-radius: 10px;
+      padding: 12px;
+      background-color: #f8f9fa;
+      border: 2px solid #dcdcdc;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+      border-color: #3498db;
+      box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+      outline: none;
+    }
+
+    .btn-info {
+      color: white;
+      font-weight: bold;
+      width: 160px;
+      height: 50px;
+      border-radius: 12px;
+      font-size: 20px;
+      background-color: #3498db;
+      border-color: #3498db;
+      transition: all 0.3s ease;
+    }
+
+    .btn-info:hover {
+      background-color: #2980b9;
+      border-color: #2980b9;
+      cursor: pointer;
+      transform: scale(1.05);
+    }
+
+    label {
+      font-size: 18px;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+
+    select {
+      font-weight: bold;
+      color: black;
+      background-color: #fff;
+      border: 2px solid #dcdcdc;
+      border-radius: 10px;
+      padding: 12px;
+    }
+
+    select:focus {
+      border-color: #3498db;
+      box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+      outline: none;
+    }
+
+    .form-heading {
+      text-align: center;
+      color: #2c3e50;
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 30px;
+      text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .form-group input,
+    .form-group select {
+      box-sizing: border-box;
+      transition: transform 0.3s ease;
+    }
+
+    .form-group input:hover,
+    .form-group select:hover {
+      transform: scale(1.05);
+    }
+
+</style>
+
+<!-- Form Section-->
+<br /><br />
+<h2>
+  <b>Find out the most suitable crop to grow in your farm</b>
+</h2>
+<br />
+
+<div class="form-container">
+  <form method="POST" action="{{ url_for('crop_prediction') }}">
+    <div class="form-heading">
+      <b>Enter Your Farm's Details</b>
+    </div>
+
+    <div class="form-group">
+      <label for="Nitrogen"><b>Nitrogen (N)</b></label>
+      <input
+        type="number"
+        class="form-control"
+        id="Nitrogen"
+        name="nitrogen"
+        placeholder="Enter value (e.g., 50)"
+        required
+      />
+    </div>
+    
+    <div class="form-group">
+      <label for="Phosphorous"><b>Phosphorous (P)</b></label>
+      <input
+        type="number"
+        class="form-control"
+        id="Phosphorous"
+        name="phosphorous"
+        placeholder="Enter value (e.g., 50)"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="Pottasium"><b>Potassium (K)</b></label>
+      <input
+        type="number"
+        class="form-control"
+        id="Pottasium"
+        name="pottasium"
+        placeholder="Enter value (e.g., 50)"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="ph"><b>Soil pH Level</b></label>
+      <input
+        type="number"
+        step="0.01"
+        class="form-control"
+        id="ph"
+        name="ph"
+        placeholder="Enter pH value"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="Rainfall"><b>Annual Rainfall (mm)</b></label>
+      <input
+        type="number"
+        step="0.01"
+        class="form-control"
+        id="Rainfall"
+        name="rainfall"
+        placeholder="Enter value in mm"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="State"><b>State</b></label>
+      <select id="sts" name="stt" class="form-control" required onchange="print_city('city', this.selectedIndex)">
+      </select>
+      <br />
+      <label for="City"><b>City</b></label>
+      <select id="city" class="form-control" name="city" required></select>
+      <script language="javascript">
+        print_state("sts");
+        // Preselect first state and populate cities on load for usability
+        (function() {
+          var stateSelect = document.getElementById('sts');
+          if (stateSelect && stateSelect.options.length > 1) {
+            stateSelect.selectedIndex = 1; // first real state (index 0 is placeholder)
+            print_city('city', stateSelect.selectedIndex);
+          }
+        })();
+      </script>
+    </div>
+
+    <div class="d-flex justify-content-center">
+      <button type="submit" class="btn btn-info">
+        Predict
+      </button>
+    </div>
+  </form>
+</div>
+
+{% endblock %}
